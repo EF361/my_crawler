@@ -40,7 +40,7 @@ with left_panel:
     st.subheader("⚙️ Crawler Settings")
     
     url_input = st.text_input("🌐 Target Website URL:", "https://ftke.utem.edu.my/en/")
-    max_pages_input = st.number_input("📄 Max Pages to Crawl:", min_value=1, max_value=50, value=5)
+    max_pages_input = st.number_input("📄 Max Pages to Crawl:", min_value=1, value=5)
     
     with st.expander("🛠️ Advanced Options", expanded=False):
         ignore_input = st.text_input("🚫 Ignore URLs containing:", "contact, login, register, admin")
