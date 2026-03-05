@@ -24,8 +24,6 @@ st.markdown("""
 
 # 3. Header Section
 st.title("🕷️ Deep Web Crawler")
-st.markdown("Extract clean, high-quality FAQ and table data for your RAG pipelines.")
-st.divider()
 
 # 4. Main Layout
 left_panel, right_panel = st.columns([1, 2], gap="large")
