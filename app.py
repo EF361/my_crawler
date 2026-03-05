@@ -8,7 +8,7 @@ st.set_page_config(layout="wide")
 left_panel, right_panel = st.columns([1, 2])
 
 with left_panel:
-    st.title("Deep Web Crawler")
+    st.title("Web Crawler")
     
     url_input = st.text_input("Enter website URL to crawl:", "https://ftke.utem.edu.my/en/")
     max_pages_input = st.number_input("Maximum pages to crawl:", min_value=1, max_value=50, value=5)
