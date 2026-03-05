@@ -12,13 +12,29 @@ def get_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     
-    # 1. Point directly to the browser installed by packages.txt
-    options.binary_location = "/usr/bin/chromium" 
+    # --- STEALTH MODE START ---
+    # 1. Dress up as a normal Windows 10 Chrome user
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     
-    # 2. Point directly to the driver installed by packages.txt
+    # 2. Hide the automation flags
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    
+    # 3. Give the browser a normal monitor size (headless defaults to a tiny weird square)
+    options.add_argument("--window-size=1920,1080")
+    # --- STEALTH MODE END ---
+    
+    # Keep your custom Streamlit Linux paths
+    options.binary_location = "/usr/bin/chromium" 
     service = Service("/usr/bin/chromedriver")
     
-    return webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(service=service, options=options)
+    
+    # 4. The Magic Trick: Erase the "I am a bot" variable hidden inside Chrome's brain
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    
+    return driver
 
 def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
     if ignore_words is None:
