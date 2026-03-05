@@ -38,7 +38,6 @@ def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
     urls_to_visit = [start_url]
     base_domain = urlparse(start_url).netloc
     
-    # Common junk words found in website menus and footers
     junk_phrases = ["student resources", "highlight", "others", "contact", "follow us", "read more", "academic handbooks"]
     
     try:
@@ -56,11 +55,13 @@ def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
             
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             
-            # 1. Scrape FAQ style data - SMART FILTERING
+            # Memory for the current page to stop the "Copycat Effect"
+            seen_answers = set()
+            
+            # 1. Scrape FAQ style data - ADVANCED FILTERING
             for q in soup.find_all(['h2', 'h3', 'h4', 'strong']):
                 title_text = clean_text(q.text)
                 
-                # Skip empty titles or titles that are known menus/footers
                 if not title_text or len(title_text) < 5 or title_text.lower() in junk_phrases:
                     continue
                     
@@ -68,12 +69,12 @@ def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
                 if answer:
                     ans_text = clean_text(answer.text)
                     
-                    # A good FAQ answer should be an actual sentence (more than 30 characters)
-                    # We also skip it if it just repeats a menu word
                     if len(ans_text) > 30 and ans_text.lower() not in junk_phrases and "@ 20" not in ans_text:
                         
-                        # Prevent duplicate entries
-                        if not any(d['title'] == title_text and d['details'] == ans_text for d in data):
+                        # NEW RULE: Only add if we haven't used this exact answer on this page yet
+                        if ans_text not in seen_answers:
+                            seen_answers.add(ans_text) # Save to memory
+                            
                             data.append({
                                 "id": len(data) + 1,
                                 "data_type": "FAQ",
@@ -89,7 +90,6 @@ def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
                     cols = row.find_all('td')
                     if len(cols) >= 3:
                         title_col = clean_text(cols[0].text)
-                        # Only grab valid table rows
                         if title_col and len(title_col) > 2:
                             data.append({
                                 "id": len(data) + 1,

@@ -45,7 +45,16 @@ with right_panel:
                     file_name=filename_input,
                     mime="application/json"
                 )
+                # Convert data to CSV format
+                csv_data = pd.DataFrame(scraped_data).to_csv(index=False).encode('utf-8')
                 
+                # New CSV Download Button
+                st.download_button(
+                    label="Download CSV",
+                    data=csv_data,
+                    file_name=filename_input.replace(".json", ".csv"),
+                    mime="text/csv"
+                )
                 st.success(f"Crawling successful! Found {len(scraped_data)} clean items.")
                 
                 # Dataframe preview
