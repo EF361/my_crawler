@@ -11,7 +11,7 @@ left_panel, right_panel = st.columns([1, 2])
 with left_panel:
     st.title("Deep Web Crawler")
     
-    url_input = st.text_input("Enter website URL to crawl:", "https://audit.utem.edu.my/en/faq.html")
+    url_input = st.text_input("Enter website URL to crawl:", "https://en.wikipedia.org/wiki/Wikipedia")
     
     max_pages_input = st.number_input("Maximum pages to crawl:", min_value=1, max_value=50, value=5)
     
