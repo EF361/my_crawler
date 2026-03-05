@@ -2,10 +2,22 @@ import time
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
+def get_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # This line is the magic fix:
+    # It installs the driver that matches your browser (v145)
+    service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+
+    return webdriver.Chrome(service=service, options=options)
 def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
     if ignore_words is None:
         ignore_words = []
@@ -97,14 +109,3 @@ def scrape_multiple_pages(start_url, max_pages=5, ignore_words=None):
         error_message = f"Error: {str(e)}"
         
     return data, error_message
-
-def get_driver():
-    options = Options()
-    options.add_argument("--headless") # Run without a UI
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    
-    # Use the system-installed chromium-driver from packages.txt
-    service = Service("/usr/bin/chromedriver")
-    
-    return webdriver.Chrome(service=service, options=options)
