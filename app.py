@@ -15,7 +15,7 @@ with left_panel:
     
     ignore_input = st.text_input("Ignore URLs containing (comma-separated):", "contact, login, register, admin")
     
-    # NEW: Option to rename the output JSON file
+    # Option to rename the output JSON file
     filename_input = st.text_input("Save file as:", "my_smart_crawler_data.json")
     
     start_crawling = st.button("Start Crawling")
@@ -38,7 +38,7 @@ with right_panel:
             elif scraped_data:
                 json_string = json.dumps(scraped_data, indent=4)
                 
-                # Updated download button with custom filename
+                # Download button with custom filename
                 st.download_button(
                     label="Download JSON",
                     data=json_string,
@@ -47,4 +47,9 @@ with right_panel:
                 )
                 
                 st.success(f"Crawling successful! Found {len(scraped_data)} clean items.")
+                
+                # Dataframe preview
                 st.dataframe(pd.DataFrame(scraped_data), width='stretch')
+                
+                # JSON preview (Added back!)
+                st.json(scraped_data)
