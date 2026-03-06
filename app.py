@@ -39,7 +39,7 @@ left_panel, right_panel = st.columns([1, 2], gap="large")
 with left_panel:
     st.subheader("⚙️ Crawler Settings")
     
-    url_input = st.text_input("🌐 Target Website URL:", "https://ftke.utem.edu.my/en/")
+    url_input = st.text_input("🌐 Target Website URL:", "https://en.wikipedia.org/wiki/Wikipedia")
     max_pages_input = st.number_input("📄 Max Pages to Crawl:", min_value=1, value=5)
     
     with st.expander("🛠️ Advanced Options", expanded=False):
