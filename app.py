@@ -5,7 +5,7 @@ from scraper_raw import scrape_multiple_pages
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="Deep Web Crawler",
+    page_title="Web Crawler",
     page_icon="🕷️",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -27,11 +27,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# 4. Header Section
-st.title("🕷️ Deep Web Crawler")
-st.markdown("Extract clean, high-quality FAQ and table data for your RAG pipelines.")
-st.divider()
 
 # 5. Main Layout
 left_panel, right_panel = st.columns([1, 2], gap="large")
