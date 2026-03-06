@@ -56,7 +56,7 @@ with right_panel:
             
         with st.status("🤖 Crawler is working...", expanded=True) as status:
             st.write(f"Connecting to {url_input}...")
-            st.write(f"Scraping up to {max_pages_input} pages in...")
+            st.write(f"Scraping up to {max_pages_input} pages...")
             
             scraped_data, error_msg = scrape_multiple_pages(url_input, max_pages_input, ignore_list)
             
