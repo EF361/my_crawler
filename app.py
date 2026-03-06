@@ -1,7 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
-from scraper import scrape_multiple_pages
+from scraper_raw import scrape_multiple_pages
 
 # 1. Page Configuration
 st.set_page_config(
