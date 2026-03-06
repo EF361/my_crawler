@@ -39,7 +39,7 @@ with left_panel:
     
     with st.expander("🛠️ Advanced Options", expanded=False):
         ignore_input = st.text_input("🚫 Ignore URLs containing:", "contact, login, register, admin")
-        filename_input = st.text_input("💾 Save file as:", "my_smart_crawler_data.json")
+        filename_input = st.text_input("💾 Save file as:", "crawler_data.json")
     
     start_crawling = st.button("🚀 Start Crawling", type="primary", use_container_width=True)
 
@@ -56,7 +56,7 @@ with right_panel:
             
         with st.status("🤖 Crawler is working...", expanded=True) as status:
             st.write(f"Connecting to {url_input}...")
-            st.write(f"Scraping up to {max_pages_input} pages in parallel...")
+            st.write(f"Scraping up to {max_pages_input} pages in...")
             
             scraped_data, error_msg = scrape_multiple_pages(url_input, max_pages_input, ignore_list)
             
