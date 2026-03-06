@@ -1,7 +1,7 @@
 import time
 import re
-import threading
 import shutil
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
@@ -11,33 +11,30 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+# NEW: Import the stealth library
+from selenium_stealth import stealth
 
-# Thread-local storage so each "worker" gets its own browser
 thread_local = threading.local()
 active_drivers = [] 
 
 def get_driver():
     options = Options()
-    options.add_argument("--headless")
+    # NEW: Use the modern headless mode which tricks Cloudflare
+    options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--window-size=1920,1080")
     
-    # Block images to save bandwidth
     prefs = {
         "profile.managed_default_content_settings.images": 2,
         "profile.managed_default_content_settings.stylesheet": 2
     }
     options.add_experimental_option("prefs", prefs)
-    options.add_argument("--blink-settings=imagesEnabled=false")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
     
-    # --- THE GPS FIX START ---
-    # Dynamically find the exact paths on the server
     chrome_path = shutil.which("chromium") or shutil.which("google-chrome")
     driver_path = shutil.which("chromedriver") or shutil.which("chromium-driver")
     
@@ -48,52 +45,56 @@ def get_driver():
         service = Service(executable_path=driver_path)
         driver = webdriver.Chrome(service=service, options=options)
     else:
-        # Ultimate fallback: let Selenium try to figure it out
         driver = webdriver.Chrome(options=options)
-    # --- THE GPS FIX END ---
         
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    # NEW: Apply the ultimate stealth disguise
+    stealth(driver,
+        languages=["en-US", "en"],
+        vendor="Google Inc.",
+        platform="Win32",
+        webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine",
+        fix_hairline=True,
+    )
+    
     return driver
 
 def get_thread_driver():
-    """Assigns a specific Chrome browser to the current working thread."""
     if not hasattr(thread_local, "driver"):
         driver = get_driver()
         thread_local.driver = driver
         active_drivers.append(driver)
     return thread_local.driver
 
-def clean_text(text):
-    return re.sub(r'\s+', ' ', text).strip()
-
 def process_single_page(url, base_domain, ignore_words):
-    """Raw worker: Extracts the entire page text as one large document."""
     driver = get_thread_driver()
     page_data = []
     new_urls = []
     
     try:
         driver.get(url)
-        try:
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        except:
-            pass 
-            
+        
+        # --- NEW: CLOUDFLARE WAITER ---
+        # Wait up to 15 seconds in the "waiting room" for the security check to pass
+        for _ in range(15):
+            page_text = driver.page_source.lower()
+            if "performing security verification" in page_text or "just a moment" in page_text:
+                time.sleep(1) # Wait 1 second and check again
+            else:
+                break # Security passed, proceed to scrape!
+        # ------------------------------
+        
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         
-        # 1. Grab the official Page Title
         title_tag = soup.find('title')
         page_title = title_tag.text.strip() if title_tag else "No Title"
         
-        # 2. Grab EVERYTHING inside the body tag
         body_tag = soup.find('body')
         if body_tag:
-            # get_text(separator='\n') mimics how a human sees the text on screen with line breaks
             full_page_text = body_tag.get_text(separator='\n', strip=True)
         else:
             full_page_text = ""
             
-        # 3. Save it exactly like the "Other Crawler" format
         if full_page_text:
             page_data.append({
                 "title": page_title,
@@ -101,7 +102,6 @@ def process_single_page(url, base_domain, ignore_words):
                 "html": full_page_text
             })
                     
-        # 4. Find Links to continue crawling
         for link in soup.find_all('a', href=True):
             full_url = urljoin(url, link['href']).split('#')[0] 
             should_ignore = any(word.lower() in full_url.lower() for word in ignore_words)
