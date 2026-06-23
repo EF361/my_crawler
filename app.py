@@ -5,10 +5,10 @@ from scraper_raw import scrape_multiple_pages
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="Deep Web Crawler",
+    page_title=" Web Crawler",
     page_icon="🕷️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed"   
 )
 
 # 2. Setup App Memory (Session State)
@@ -28,11 +28,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Header Section
-st.title("🕷️ Deep Web Crawler")
-st.markdown("Extract clean, high-quality FAQ and table data for your RAG pipelines.")
-st.divider()
-
 # 5. Main Layout
 left_panel, right_panel = st.columns([1, 2], gap="large")
 
@@ -40,7 +35,7 @@ with left_panel:
     st.subheader("⚙️ Crawler Settings")
     
     url_input = st.text_input("🌐 Target Website URL:", "https://en.wikipedia.org/wiki/Wikipedia")
-    max_pages_input = st.number_input("📄 Max Pages to Crawl:", min_value=1, value=5)
+    max_pages_input = st.number_input("📄 Max Pages to Crawl:", min_value=1, value=1000)
     
     with st.expander("🛠️ Advanced Options", expanded=False):
         ignore_input = st.text_input("🚫 Ignore URLs containing:", "contact, login, register, admin")
