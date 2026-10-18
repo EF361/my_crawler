@@ -1,99 +1,110 @@
 # my_crawler
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Streamlit](https://img.shields.io/badge/Framework-Streamlit-brightgreen)
-![Selenium](https://img.shields.io/badge/Automation-Selenium-yellow)
-![License](https://img.shields.io/badge/License-MIT-informational)
-![Tests](https://img.shields.io/badge/pytest-Coverage-green)
-![Status](https://img.shields.io/badge/Status-Security%20Audited-warning)
+![Python version](https://img.shields.io/badge/Python-3.9+-blue)  
+![Streamlit](https://img.shields.io/badge/Framework-Streamlit-brightgreen)  
+![License](https://img.shields.io/github/license/EF361/my_crawler)  
+![Maintenance](https://img.shields.io/badge/Maintained-Yes-success)  
+![Pytest](https://img.shields.io/badge/Testing-pytest-orange)  
 
-## 🕵️ Executive Summary
-**my_crawler** is a secure and extensible web crawler designed for high-performance and compliance-conscious web scraping. It integrates safeguards against DNS rebinding, SSRF attacks, and formula injection, while providing robust export capabilities and browser automation in tightly controlled environments.
+---
 
-## ✨ Key Features
-- **Advanced Resolver & Redirect Validation**:
-  - Resolves and validates all redirect targets and IP addresses (IPv4, IPv6, and alternative representations) prior to connection.
-  - Mitigates DNS rebinding, blocks internal/loopback destinations, and ensures robust request validation.
-- **Selenium Sandbox Isolation**:
-  - Executes browser jobs in secure, isolated containers with configurable limits for CPU, memory, page-count, wall-clock time, and downloads.
-- **Adherence to Standards**:
-  - Enforces robots.txt and terms-of-service compliance with configurable, identifiable user-agent settings.
-  - Applies host-specific rate-limiting to prevent overloading servers.
-- **Structured Exports**:
-  - Outputs clean datasets in CSV and Excel formats with safeguards against formula injection by neutralizing malicious characters.
-- **Security-Oriented Testing**:
-  - Includes adversarial testing for edge scenarios such as redirect loops, decompression bombs, malformed encodings, large responses, and partial failures.
-- **Streamlit Interface**:
-  - Intuitive and interactive visualization and control panel for managing crawling tasks and analyzing results.
+## Executive Summary
 
-## 🏗️ Architecture & Workflow
-The architecture of **my_crawler** ensures modularity, security, and extensibility at every layer.
+**my_crawler** is an advanced, secure, and modular web crawler built for safe and legal data extraction from target websites. It combines robust technical safeguards, DNS validation, containerized execution environments, and adversarial protections to address modern web crawling threats like SSRF, DNS rebinding, and resource exhaustion.
+
+---
+
+## Key Features
+
+- **Adversarial Protections**: Mitigates risks like SSRF, DNS rebinding, DNS spoofing, and hostile content injection through real-time DNS resolution and redirect validation.
+- **Hardened Browser Isolation**: Executes browser workers in sandboxed containers with:
+  - No internal network routes
+  - Non-root execution
+  - Read-only filesystems and tightly controlled resources
+- **Rate Limiting & Concurrency Controls**: Enforces per-target crawl delays and maximum concurrent connections.
+- **Export Security**: Prevents spreadsheet attacks by sanitizing exported CSV/Excel files to handle formula-based injections (`=`, `+`, `@`, etc.).
+- **Configurable Crawl Policies**: Modular design separates policy definitions, transport logic, browser execution, content extraction, and data export, ensuring highly testable and reusable components.
+- **Streamlined Testing**: Integrated pytest suite covering boundary cases, including handling of redirects, depth limits, and fail-safe execution.
+- **Compliance and Safety**: Documents ethical crawling practices while ensuring operational policies are programmable beyond the standard `robots.txt` mechanism.
+
+---
+
+## Architecture & Workflow
 
 ```mermaid
-graph TD
-    A[Start Crawler] --> B[Streamlit UI]
-    B --> C[Input URLs]
-    B --> D[Set Parameters]
-    C --> E[Resolve DNS & Validate IPs]
-    E --> F{Redirects?}
-    F -->|Yes| G[Follow Redirects Safely]
-    G --> H[Validate Destination]
-    F -->|No| H[Validate Destination]
-    H --> I[Check Robots.txt & ToS]
-    I --> J[Scrape with Selenium in Sandbox]
-    J --> K[Parse with BeautifulSoup]
-    K --> L[Export Data (CSV/Excel)]
-    L --> M[End Process]
+flowchart TD
+  A["Start: User Interaction via Streamlit"] -->|"Configure Crawl Settings"| B["Crawler Policy Module"]
+  B -->|"Define Crawl Depth, Targets, and Delays"| C["DNS Resolution & Redirect Validation"]
+  C -->|"Verify IPv4/IPv6 and Prevent Rebinding"| D["Transport & Browser Handling"]
+  D -->|"Isolated Execution in Hardened Containers"| E["Content Extraction Module"]
+  E -->|"Extract, Clean, and Process Data"| F["Export Module (CSV/Excel)"]
+  F -->|"Sanitize & Save Spreadsheets"| G["Output to User"]
+  G -->|"End of Workflow"| Z["Done"]
+  D -->|"Handle Failures Gracefully"| H["Error Handling Module"]
 ```
 
-## 💻 Tech Stack & Tools Breakdown
+---
+
+## Tech Stack & Tools Breakdown
+
 - **Programming Language**: Python 3.9+
-- **Frameworks & Libraries**:
-  - **Streamlit**: Interactive UI for controlling and visualizing crawls.
-  - **Selenium**: Browser automation with sandboxing for secure website interactions.
-  - **BeautifulSoup4**: HTML parsing and content extraction.
-  - **Pandas**: Data processing and structuring.
-- **Formats**:
-  - **CSV/Excel**: Export structured data securely with injection-neutral sanitization.
-- **Testing**:
-  - **pytest**: Robust and adversarial test cases for security and reliability.
+- **User Interface**: Streamlit for intuitive configuration and progress tracking
+- **Web Crawling**: Selenium (browser automation) and BeautifulSoup4 (HTML parsing)
+- **Data Handling**: Pandas for data formatting and export
+- **File Exports**: CSV and Excel with security-centric sanitization
+- **Testing**: Pytest for comprehensive unit and integration tests
+- **Sandboxing & Security**: Containerized browser execution with Docker/Podman
+- **Dependency Management**: pip for package installation
 
-## 🚀 Quickstart / Installation
-Follow these steps to install and run **my_crawler**:
+---
 
-1. **Clone the repository**:
+## Quickstart / Installation
+
+### Prerequisites
+
+- Python 3.9+ installed on your system
+- Docker/Podman installed for containerized execution
+- Recommended: Create and activate a virtual environment
+
+### Installation Steps
+
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/EF361/my_crawler.git
    cd my_crawler
    ```
 
-2. **Set up a virtual environment**:
+2. **Set Up the Environment**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate    # On Windows: venv\Scripts\activate
+   python -m venv .env
+   source .env/bin/activate  # On Windows use .env\Scripts\activate
+   pip install --upgrade pip
    ```
 
-3. **Install dependencies**:
+3. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run tests**:
+4. **Run Tests (Optional)**:
    ```bash
    pytest
    ```
 
-5. **Start the Streamlit interface**:
+5. **Run the Application**:
    ```bash
    streamlit run app.py
    ```
 
-6. **Configure and start crawling**:
-   - Use the Streamlit interface to input URLs, configure crawling parameters, and begin the process.
-
-7. **View and export results**:
-   - Download crawled data directly from the interface in CSV or Excel formats.
+6. **Container Initialization (Optional)**:
+   Ensure Docker is running before executing containerized crawls. Customize settings via the `config.yaml` file.
 
 ---
 
-**Disclaimer**: Always ensure compliance with the target website's terms of service and applicable regulations before crawling.
+## Legal & Operational Notice
+
+This software respects ethical crawling standards. Use this tool responsibly and ensure compliance with applicable laws, site-specific terms of service, and ethical guidelines. Note that adherence to `robots.txt` is considered but not solely sufficient as permission to scrape.
+
+---
+
+Built and maintained with ❤️ by [Alicia Goh (EF361)](https://github.com/EF361).
