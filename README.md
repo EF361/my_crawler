@@ -1,106 +1,99 @@
 # my_crawler
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&style=flat-square)
-![Streamlit](https://img.shields.io/badge/Streamlit-%E2%A7%99-red?logo=streamlit&style=flat-square)
-![BeautifulSoup4](https://img.shields.io/badge/BeautifulSoup4-WebScraping-green?style=flat-square)
-![Selenium](https://img.shields.io/badge/Selenium-BrowserAutomation-orange?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Streamlit](https://img.shields.io/badge/Framework-Streamlit-brightgreen)
+![Selenium](https://img.shields.io/badge/Automation-Selenium-yellow)
+![License](https://img.shields.io/badge/License-MIT-informational)
+![Tests](https://img.shields.io/badge/pytest-Coverage-green)
+![Status](https://img.shields.io/badge/Status-Security%20Audited-warning)
 
-## 🚀 Executive Summary
-
-`my_crawler` is a robust, secure, and modular web scraping tool built with Python 3.9+, Streamlit, Selenium, and BeautifulSoup4. Designed for reliable data extraction, it adheres to privacy, security, and ethical web scraping best practices, providing a streamlined and scalable interface for structured data export in formats like CSV and Excel. From static HTML scraping to fully browser-driven automation, `my_crawler` empowers users to navigate intricate web pages with confidence.
+## 🕵️ Executive Summary
+**my_crawler** is a secure and extensible web crawler designed for high-performance and compliance-conscious web scraping. It integrates safeguards against DNS rebinding, SSRF attacks, and formula injection, while providing robust export capabilities and browser automation in tightly controlled environments.
 
 ## ✨ Key Features
+- **Advanced Resolver & Redirect Validation**:
+  - Resolves and validates all redirect targets and IP addresses (IPv4, IPv6, and alternative representations) prior to connection.
+  - Mitigates DNS rebinding, blocks internal/loopback destinations, and ensures robust request validation.
+- **Selenium Sandbox Isolation**:
+  - Executes browser jobs in secure, isolated containers with configurable limits for CPU, memory, page-count, wall-clock time, and downloads.
+- **Adherence to Standards**:
+  - Enforces robots.txt and terms-of-service compliance with configurable, identifiable user-agent settings.
+  - Applies host-specific rate-limiting to prevent overloading servers.
+- **Structured Exports**:
+  - Outputs clean datasets in CSV and Excel formats with safeguards against formula injection by neutralizing malicious characters.
+- **Security-Oriented Testing**:
+  - Includes adversarial testing for edge scenarios such as redirect loops, decompression bombs, malformed encodings, large responses, and partial failures.
+- **Streamlit Interface**:
+  - Intuitive and interactive visualization and control panel for managing crawling tasks and analyzing results.
 
-- **Modular Design**: Decoupled components for fetching, parsing, transforming, and exporting data ensure testability and scalability.
-- **SSRF Protection**: Strict URL validation and blocking of unsafe network destinations, including loopback, private, and metadata-service addresses.
-- **Compliance Ready**: Respects `robots.txt`, terms of service, rate limits, and data privacy standards, minimizing legal and ethical liabilities.
-- **Timeouts & Backoff**: Configurable connection, page-load, script execution, and full job runtime limits, paired with bounded retries and exponential backoff.
-- **Sandboxed Selenium**: Minimally permissive browser configuration with controlled memory, page limits, and download restrictions for safe execution.
-- **Dynamic & Static Scraping**: Seamless integration of browser-driven scraping (via Selenium) and lightweight static HTML parsing (via BeautifulSoup4).
-- **Export Flexibility**: Outputs scraped data to structured formats like CSV and Excel for downstream analysis.
-- **Thorough Testing**: Fixture-based tests for malformed HTML, redirect loops, encoding issues, dynamic content, and bot detection ensure reliability.
-
-## 🏛️ Architecture & Workflow
+## 🏗️ Architecture & Workflow
+The architecture of **my_crawler** ensures modularity, security, and extensibility at every layer.
 
 ```mermaid
-flowchart TD
-    S1[Streamlit UI] -->|Input: URL, Options| F1[URL Validation]
-    F1 -->|Filter unsafe/blocked destinations| C1[Scheduler]
-    C1 -->|Job Queue| C2[Web Scraper]
-    C2 -->|Static HTML Parsing| P1[BeautifulSoup4 Parser]
-    C2 -->|Dynamic Page Navigation| P2[Selenium WebDriver]
-    P1 -->|Extracted Data| T1[Data Transformer]
-    P2 -->|Extracted Data| T1[Data Transformer]
-    T1 -->|Cleaned/Structured Data| E1[Export Engine]
-    E1 -->|CSV/Excel Output| USER[User]
+graph TD
+    A[Start Crawler] --> B[Streamlit UI]
+    B --> C[Input URLs]
+    B --> D[Set Parameters]
+    C --> E[Resolve DNS & Validate IPs]
+    E --> F{Redirects?}
+    F -->|Yes| G[Follow Redirects Safely]
+    G --> H[Validate Destination]
+    F -->|No| H[Validate Destination]
+    H --> I[Check Robots.txt & ToS]
+    I --> J[Scrape with Selenium in Sandbox]
+    J --> K[Parse with BeautifulSoup]
+    K --> L[Export Data (CSV/Excel)]
+    L --> M[End Process]
 ```
 
-## 🧰 Tech Stack & Tools Breakdown
+## 💻 Tech Stack & Tools Breakdown
+- **Programming Language**: Python 3.9+
+- **Frameworks & Libraries**:
+  - **Streamlit**: Interactive UI for controlling and visualizing crawls.
+  - **Selenium**: Browser automation with sandboxing for secure website interactions.
+  - **BeautifulSoup4**: HTML parsing and content extraction.
+  - **Pandas**: Data processing and structuring.
+- **Formats**:
+  - **CSV/Excel**: Export structured data securely with injection-neutral sanitization.
+- **Testing**:
+  - **pytest**: Robust and adversarial test cases for security and reliability.
 
-| Component                | Technology/Tool         | Purpose                                                                 |
-|--------------------------|-------------------------|-------------------------------------------------------------------------|
-| **Frontend**             | Streamlit              | User-friendly interface for defining scraping jobs                      |
-| **Web Scraping**         | BeautifulSoup4         | Fast and efficient parsing of static web pages                         |
-|                          | Selenium               | Browser-driven automation for handling JavaScript-heavy pages           |
-| **Data Handling**        | Pandas                 | Data transformation and manipulation                                   |
-| **Export**               | CSV, Excel            | Data export to widely used structured formats                          |
-| **Testing**              | Pytest + Fixtures      | Thorough coverage for edge cases like redirects, bot blocks, etc.      |
+## 🚀 Quickstart / Installation
+Follow these steps to install and run **my_crawler**:
 
-## ⚡ Quickstart / Installation
-
-Follow these steps to set up and run `my_crawler` on your system.
-
-### Prerequisites
-
-- Python 3.9 or later
-- ChromeDriver or an equivalent browser driver (matching your browser version)
-
-### Installation
-
-1. **Clone the Repository**
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/EF361/my_crawler.git
    cd my_crawler
    ```
 
-2. **Set Up Virtual Environment**
+2. **Set up a virtual environment**:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   python -m venv venv
+   source venv/bin/activate    # On Windows: venv\Scripts\activate
    ```
 
-3. **Install Dependencies**
+3. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Download Appropriate Browser Driver**
-   - Ensure the browser driver version matches your installed browser.
-   - [ChromeDriver Downloads](https://sites.google.com/chromium.org/driver/)
+4. **Run tests**:
+   ```bash
+   pytest
+   ```
 
-5. **Run the Streamlit Application**
+5. **Start the Streamlit interface**:
    ```bash
    streamlit run app.py
    ```
 
-### Configuration
+6. **Configure and start crawling**:
+   - Use the Streamlit interface to input URLs, configure crawling parameters, and begin the process.
 
-- **Browser Driver Path**: Update the `.env` file with the path to your browser driver.
-- **Timeouts & Retries**: Customize these parameters in the `config.py` file to fit your needs.
-
-### Testing
-
-Run tests to ensure the scraper is functioning as expected:
-
-```bash
-pytest tests/
-```
-
-## 📜 License
-
-This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+7. **View and export results**:
+   - Download crawled data directly from the interface in CSV or Excel formats.
 
 ---
 
-Made with ❤️ by [EF361](https://github.com/EF361).
+**Disclaimer**: Always ensure compliance with the target website's terms of service and applicable regulations before crawling.
